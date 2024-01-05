@@ -25,7 +25,7 @@ export default function login() {
       const res = await login(user);
       if (res.data) {
         dispatch(setCredentials(res.data.user));
-        navigate("/home");
+        navigate("/");
       } else {
         navigate("/login");
       }
@@ -38,7 +38,7 @@ export default function login() {
 
   return (
     <div className="flex mt-48 justify-center items-center ">
-      <div className="  w-full  md:max-w-3xl space-y-8  ">
+      <div className="  w-full  max-w-xl space-y-8  ">
         <h2 className="text-4xl font-bold text-center ">Login</h2>
         <div className="space-y-4 p-8 border shadow-md rounded ">
           <div className="flex flex-col space-y-1">
