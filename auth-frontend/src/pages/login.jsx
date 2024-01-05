@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
-import { useLoginMutation } from "../slices/userSlice";
+import { useLoginMutation } from "../slices/userQuery";
 export default function login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();

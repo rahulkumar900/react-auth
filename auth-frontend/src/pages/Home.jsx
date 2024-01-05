@@ -1,4 +1,4 @@
-import { useGetAllQuery } from "../slices/userSlice";
+import { useGetAllQuery } from "../slices/userQuery";
 
 export default function Home() {
   const { data, error, isLoading, isFetching } = useGetAllQuery();
@@ -6,7 +6,7 @@ export default function Home() {
   console.log(data, error, isLoading, isFetching);
 
   return (
-    <div className="  h-screen w-screen">
+    <div className="">
       <h1 className="text-4xl ">Home</h1>
       <ul>
         {data &&
