@@ -18,12 +18,19 @@ export default function Header() {
                 <Link to="/login">Login</Link>
               </li>
             ) : (
-              <li
-                onClick={() => dispatch(signOutUserSuccess())}
-                className="bg-blue-600 px-3 py-2 rounded-md text-gray-100 cursor-pointer"
-              >
-                Logout
-              </li>
+              <div className="flex items-center gap-2 ">
+                <img
+                  src={userInfo.avatar}
+                  className="w-10 h-10 rounded-full"
+                  alt="avatar"
+                />
+                <li
+                  onClick={() => dispatch(signOutUserSuccess())}
+                  className="bg-blue-600 px-3 py-2 rounded-md text-gray-100 cursor-pointer"
+                >
+                  Logout
+                </li>
+              </div>
             )}
           </ul>
         </nav>

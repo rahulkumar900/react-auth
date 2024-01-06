@@ -17,6 +17,9 @@ const userSchema = new Schema(
       unique: true,
       match: [/.+\@.+\..+/, "Please fill a valid email address"],
     },
+    avatar: {
+      type: String,
+    },
     tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
     hashed_password: { type: String, required: true },
     salt: { type: String },

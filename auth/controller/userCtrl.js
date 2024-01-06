@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 var { expressjwt } = require("express-jwt");
 const { response } = require("../app");
@@ -37,6 +38,41 @@ const login = async (req, res, next) => {
       user: { _id: user._id, name: user.name, email: user.email },
     });
   } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const google = async (req, res, next) => {
+  try {
+    console.log(req.body);
+    const { email } = req.body;
+    const existingUser = await User.findOne({ email });
+    console.log(existingUser);
+    if (existingUser) {
+      const { hashed_password, salt, tasks, ...rest } = existingUser._doc;
+      const token = jwt.sign({ id: existingUser._id }, process.env.SECRET);
+      res.cookie("t", token, { expire: new Date() + 9999 });
+      // res.status(200).json(rest);
+      res.status(200).json({ rest });
+    } else {
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      const newUser = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: hashedPassword,
+        avatar: req.body.avatar,
+      });
+      await newUser.save();
+
+      const token = jwt.sign({ id: newUser._id }, process.env.SECRET);
+      res.cookie("t", token, { expire: new Date() + 9999 });
+      const { hashed_password, salt, tasks, ...rest } = newUser._doc;
+      res.cookie("t", token, { httpOnly: true }).status(200).json(rest);
+    }
+  } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -139,6 +175,7 @@ module.exports = {
   list,
   create,
   login,
+  google,
   isAuth,
   setReqUser,
   read,

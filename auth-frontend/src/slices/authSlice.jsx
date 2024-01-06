@@ -73,6 +73,7 @@ const authSlice = createSlice({
 
 export default authSlice.reducer;
 export const {
+  signInStart,
   setCredentials,
   signOutUserStart,
   signOutUserSuccess,

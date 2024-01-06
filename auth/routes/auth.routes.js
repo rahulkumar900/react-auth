@@ -4,6 +4,7 @@ const userCtrl = require("../controller/userCtrl");
 
 router.route("/users").get(userCtrl.list).post(userCtrl.create);
 router.post("/login", userCtrl.login);
+router.post("/google-auth", userCtrl.google);
 
 router.param("id", userCtrl.setReqUser);
 

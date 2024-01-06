@@ -9,6 +9,13 @@ export const userSlice = authApi.injectEndpoints({
         body: data,
       }),
     }),
+    google: build.mutation({
+      query: (data) => ({
+        url: "/google-auth",
+        method: "POST",
+        body: data,
+      }),
+    }),
     getAll: build.query({
       query: () => ({
         url: "/users",
@@ -18,4 +25,5 @@ export const userSlice = authApi.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useGetAllQuery } = userSlice;
+export const { useLoginMutation, useGoogleMutation, useGetAllQuery } =
+  userSlice;
