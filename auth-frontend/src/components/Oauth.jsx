@@ -25,6 +25,7 @@ export default function Oauth() {
       dispatch(setCredentials(res.data.rest));
       navigate("/");
     } catch (error) {
+        navigate("/login");
       console.log("could not sign in with google", error);
     }
   };

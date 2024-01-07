@@ -20,7 +20,7 @@ const userSchema = new Schema(
     avatar: {
       type: String,
     },
-    tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }],
+ 
     hashed_password: { type: String, required: true },
     salt: { type: String },
   },
