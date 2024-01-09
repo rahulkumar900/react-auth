@@ -22,10 +22,11 @@ export default function Oauth() {
         avatar: user.photoURL,
       };
       const res = await google(authUser);
+      console.log("user login data", res);
       dispatch(setCredentials(res.data.rest));
       navigate("/");
     } catch (error) {
-        navigate("/login");
+      navigate("/login");
       console.log("could not sign in with google", error);
     }
   };

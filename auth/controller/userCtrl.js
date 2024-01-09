@@ -46,7 +46,7 @@ const google = async (req, res, next) => {
     console.log(req.body);
     const { email } = req.body;
     const existingUser = await User.findOne({ email });
-    console.log(existingUser);
+
     if (existingUser) {
       const { hashed_password, salt, tasks, ...rest } = existingUser._doc;
       const token = jwt.sign({ id: existingUser._id }, process.env.SECRET);
@@ -103,8 +103,8 @@ const isAuth = async (req, res, next) => {
 const list = async (req, res, next) => {
   try {
     const users = await User.find()
-      .populate("tasks")
-      .select("name email tasks")
+
+      .select("name email avatar")
       .exec();
 
     res.status(200).json(users);
