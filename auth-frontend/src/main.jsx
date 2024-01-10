@@ -9,6 +9,7 @@ import ErrorPage from "./components/errorPage";
 import Login from "./pages/login";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
+import SingnUp from "./pages/signup";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/signup",
+    element: <SingnUp />,
   },
 ]);
 

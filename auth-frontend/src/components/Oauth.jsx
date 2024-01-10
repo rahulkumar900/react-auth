@@ -1,6 +1,7 @@
 import React from "react";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { useGoogleMutation } from "../slices/userQuery";
+import { FcGoogle } from "react-icons/fc";
 import { signInStart, setCredentials } from "../slices/authSlice";
 import { app } from "../../firebase";
 import { useDispatch } from "react-redux";
@@ -34,9 +35,10 @@ export default function Oauth() {
     <button
       onClick={handleGoogleClick}
       type="button"
-      className="bg-red-700 text-white p-3 w-full rounded-lg uppercase hover:opacity-95"
+      className="flex gap-4 items-center justify-center shadow-md ring-1 ring-slate-200 p-3 w-full rounded-lg uppercase hover:opacity-95"
     >
-      Continue with google
+      <FcGoogle size={30} />
+      <span className="text-md"> Continue with google</span>
     </button>
   );
 }
