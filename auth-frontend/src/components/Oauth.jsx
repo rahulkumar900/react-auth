@@ -24,8 +24,12 @@ export default function Oauth() {
       };
       const res = await google(authUser);
       console.log("user login data", res);
-      dispatch(setCredentials(res.data.rest));
-      navigate("/");
+      if (res.data) {
+        dispatch(setCredentials(res.data.rest));
+        navigate("/");
+      } else {
+        console.log(res.error);
+      }
     } catch (error) {
       navigate("/login");
       console.log("could not sign in with google", error);

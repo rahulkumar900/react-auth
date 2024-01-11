@@ -14,9 +14,9 @@ const create = async (req, res, next) => {
     }
     const user = new User({ name, email, password });
     await user.save();
-    return res.status(200).json({ message: "User Created successfully" });
+    res.status(201).json({ message: "User Created successfully" });
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -29,7 +29,9 @@ const login = async (req, res, next) => {
     }
     if (!user.authenticate(password)) {
       console.log("authentication failed");
-      res.status(401).json({ error: "Email and password doesn't match." });
+      return res
+        .status(401)
+        .json({ error: "Email and password doesn't match." });
     }
 
     const token = jwt.sign({ _id: user._id }, process.env.SECRET);

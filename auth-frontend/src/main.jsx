@@ -10,6 +10,7 @@ import Login from "./pages/login";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
 import SingnUp from "./pages/signup";
+import { ToastProvider } from "../toastContext";
 
 const router = createBrowserRouter([
   {
@@ -34,11 +35,13 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <React.StrictMode>
-        <RouterProvider router={router} />
-      </React.StrictMode>
-    </PersistGate>
-  </Provider>
+  <ToastProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <React.StrictMode>
+          <RouterProvider router={router} />
+        </React.StrictMode>
+      </PersistGate>
+    </Provider>
+  </ToastProvider>
 );

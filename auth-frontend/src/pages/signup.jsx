@@ -1,21 +1,30 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useId } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import { CiUser } from "react-icons/ci";
-import { useLoginMutation } from "../slices/userQuery";
-
+import { useLoginMutation, useSignupMutation } from "../slices/userQuery";
 import Oauth from "../components/Oauth";
 import { app } from "../../firebase";
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage"
+import { useToast } from "../../toastContext";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 export default function SingnUp() {
   const fileRef = useRef();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [image, setImage] = useState();
+  const [image, setImage] = useState("");
   const [filePercentage, setFilePercentage] = useState(0);
-  const [fileUploadErroe, setFileUploadError] = useState(false);
+  const [fileUploadError, setFileUploadError] = useState(undefined);
+  const [uploadStatus, setUploadStatus] = useState("");
+  const { showToast } = useToast();
+  const [signup] = useSignupMutation();
+
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -23,71 +32,127 @@ export default function SingnUp() {
     password: "",
   });
 
-  console.log(user);
+  const uniqueIdentifier = useId();
 
-  const [login] = useLoginMutation();
+  function getEmptyKeys(obj) {
+    const emptyKeys = [];
+
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && !obj[key]) {
+        emptyKeys.push(key);
+      }
+    }
+
+    return emptyKeys;
+  }
+  console.log(user);
   const handlechange = (e) => {
     const { name, value } = e.target;
     setUser({ ...user, [name]: value });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // try {
-    //   const res = await login(user);
-    //   if (res.data) {
-    //     dispatch(setCredentials(res.data.user));
-    //     navigate("/");
-    //   } else {
-    //     navigate("/login");
-    //   }
-
-    //   console.log(res.data);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    const { name, email, avatar, password } = user;
+    if (name && email && password) {
+      const res = await signup(user);
+      if (res.data) {
+        showToast(res.data.message);
+        navigate("/login");
+      }
+    } else {
+      const emptyKeys = getEmptyKeys(user);
+      const text = `${emptyKeys} are empty`;
+      showToast(text);
+    }
   };
 
   const handleFileUpload = (file) => {
-    const storage = getStorage(app)
-    const filename = new Date().getTime() + file.name;
-    const storageRef = ref(storage, filename);
-    const uploadTask = uploadBytesResumable(storageRef);
-    uploadTask.on('state_changed', (snapshot) => {
-      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      setFilePercentage(Math.round(progress));
-    },
-      error => {
-        setFileUploadError(true);
+    const storage = getStorage();
+    // Create the file metadata
+    /** @type {any} */
+    const metadata = {
+      contentType: file.type,
+    };
+    const customeName = uniqueIdentifier + file.name;
+    console.log(customeName);
+    // Upload file and metadata to the object 'images/mountains.jpg'
+    const storageRef = ref(storage, "images/" + customeName);
+    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+    // Listen for state changes, errors, and completion of the upload.
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setFilePercentage(progress);
+        console.log("Upload is " + progress + "% done");
+        setFilePercentage(progress);
+        switch (snapshot.state) {
+          case "paused":
+            // console.log("Upload is paused");
+            setUploadStatus("paused");
+
+            break;
+          case "running":
+            // console.log("Upload is running");
+            setUploadStatus("running");
+            break;
+        }
+      },
+      (error) => {
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case "storage/unauthorized":
+            setFileUploadError(
+              " User doesn't have permission to access the object"
+            );
+            break;
+          case "storage/canceled":
+            setFileUploadError(" User canceled the upload");
+            break;
+
+          // ...
+
+          case "storage/unknown":
+            setFileUploadError(
+              "Unknown error occurred, inspect error.serverResponse "
+            );
+            break;
+        }
       },
       () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          console.log("download url ", url);
-          setUser({ ...user, avatar: url });
-        })
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setUser({ ...user, avatar: downloadURL });
+          setUploadStatus("completed");
+        });
       }
+    );
+  };
 
-    )
-
-
-  }
-
+  useEffect(() => {
+    showToast(
+      fileUploadError || (uploadStatus === "completed" && "upload compled")
+    );
+  }, [fileUploadError, uploadStatus]);
 
   useEffect(() => {
     if (image) {
-      handleFileUpload(image)
+      handleFileUpload(image);
     }
-  }, [image])
-
-
-
-
+  }, [image]);
 
   return (
     <div className="flex mt-48 justify-center items-center ">
       <div className="  w-full  max-w-xl space-y-8  ">
         <h2 className="text-4xl font-bold text-center ">Create New Account</h2>
-        <form className="space-y-8 px-8 py-14 border appearance-none  rounded ">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-8 px-8 py-14 border appearance-none  rounded "
+        >
           <div className="flex flex-col space-y-1">
             <label htmlFor="name">Name</label>
             <input
@@ -97,7 +162,6 @@ export default function SingnUp() {
               name="name"
               onChange={handlechange}
               placeholder="Name"
-              autoComplete
               required
             />
           </div>
@@ -110,7 +174,6 @@ export default function SingnUp() {
               name="email"
               onChange={handlechange}
               placeholder="Email"
-              autoComplete
               required
             />
           </div>
@@ -123,21 +186,30 @@ export default function SingnUp() {
               name="password"
               onChange={handlechange}
               placeholder="Password"
-              autoComplete="true"
               required
             />
           </div>
           <div className="flex items-center gap-4">
-            <div
-              onClick={() => fileRef.current.click()}
-              className=" border cursor-pointer w-12 h-12 items-center justify-center flex  rounded-full p-2 ring-1 ring-gray-400"
-            >
-              {
-                user.avatar ? (<img src={user.avatar} alt="dsa" />) :
-                  (<CiUser size={30} />)
-              }
+            <div>
+              {user.avatar ? (
+                <img
+                  className=" w-12 h-12 object-cover rounded-full object-center 
+                   onClick={() => fileRef.current.click()}
+                  overflow-hidden border cursor-pointer ring-1 "
+                  src={user.avatar}
+                  alt="dsa"
+                />
+              ) : (
+                <CiUser
+                  size={48}
+                  onClick={() => fileRef.current.click()}
+                  className="ring-1 rounded-full p-2 ring-gray-800"
+                />
+              )}
             </div>
-            <span className="font-semibold">Select Profile Pic</span>
+            <span className="font-semibold">
+              {image ? image.name : "Select an image"}
+            </span>
 
             <input
               ref={fileRef}
