@@ -7,12 +7,13 @@ require("dotenv").config();
 
 const create = async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatar } = req.body;
+    console.log(req.body);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "user already exists" });
     }
-    const user = new User({ name, email, password });
+    const user = new User({ name, email, password, avatar });
     await user.save();
     res.status(201).json({ message: "User Created successfully" });
   } catch (error) {
@@ -25,7 +26,7 @@ const login = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email });
     if (!user) {
-      res.status(401).json({ message: "User doesn't exists" });
+      return res.status(401).json({ message: "User doesn't exists" });
     }
     if (!user.authenticate(password)) {
       console.log("authentication failed");
@@ -37,7 +38,12 @@ const login = async (req, res, next) => {
     const token = jwt.sign({ _id: user._id }, process.env.SECRET);
     res.cookie("t", token, { expire: new Date() + 9999 });
     res.status(200).json({
-      user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+      },
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
