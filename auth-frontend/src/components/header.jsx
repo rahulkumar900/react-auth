@@ -10,7 +10,7 @@ export default function Header() {
   return (
     <header className=" w-full overflow-hidden border-b shadow-sm p-4">
       {
-        <nav className="flex justify-between items-center">
+        <nav className="flex justify-between items-center max-w-5xl mx-auto">
           <div>
             <Link
               className="text-3xl font-bold text-transparent bg-gradient-to-r from-pink-500 to-violet-500  bg-clip-text"

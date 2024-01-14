@@ -5,15 +5,20 @@ export default function ProfilePic({
   avatar = null,
   alt = "",
   placeholder = "R",
+  userName="",
   handleClick = (f) => f,
+  
 }) {
+
+  const firstText = x => x.charAt(0);
+  console.log(firstText("Rahu"));
   return (
     <>
       {!avatar ? (
         <div
           className={`${className}  bg-slate-500 inline-flex items-center justify-center`}
         >
-          {placeholder}
+          {firstText(userName) || placeholder}
         </div>
       ) : (
         <img
