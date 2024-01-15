@@ -52,17 +52,19 @@ export default function SingnUp() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, avatar, password } = user;
+    const { name, email, password } = user;
     if (name && email && password) {
       const res = await signup(user);
       if (res.data) {
-        showToast(res.data.message);
+        showToast(res.data.message, { type: "success" });
         navigate("/login");
       }
+      console.log(res);
+      showToast(res.error.data.message, { type: "error" });
     } else {
       const emptyKeys = getEmptyKeys(user);
       const text = `${emptyKeys} are empty`;
-      showToast(text);
+      showToast(text, { type: "error" });
     }
   };
 
@@ -146,12 +148,14 @@ export default function SingnUp() {
   }, [image]);
 
   return (
-    <div className="flex mt-48 justify-center items-center ">
-      <div className="  w-full  max-w-xl space-y-8  ">
-        <h2 className="text-4xl font-bold text-center ">Create New Account</h2>
+    <div className="w-full min-h-screen flex justify-center items-center">
+      <div className=" w-full  max-w-xl space-y-8   ">
+        <h2 className="text-4xl font-bold text-center text-gray-500  ">
+          Create New Account
+        </h2>
         <form
           onSubmit={handleSubmit}
-          className="space-y-8 px-8 py-14 border appearance-none  rounded "
+          className="ring-1 ring-slate-200 space-y-8 px-8 py-14 border appearance-none  rounded "
         >
           <div className="flex flex-col space-y-1">
             <label htmlFor="name">Name</label>

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../slices/authSlice";
 import { useLoginMutation } from "../slices/userQuery";
-
+import { Link } from "react-router-dom";
 import Oauth from "../components/Oauth";
 export default function login() {
   const dispatch = useDispatch();
@@ -42,11 +42,11 @@ export default function login() {
     <div className="flex mt-48 justify-center items-center ">
       <div className="  w-full  max-w-xl space-y-8  ">
         <h2 className="text-4xl font-bold text-center ">Login</h2>
-        <div className="space-y-8 px-8 py-14 border  rounded ">
+        <div className="space-y-8 px-8 py-14 border bg-zinc-100  rounded-md ring-1 ring-zinc-300  drop-shadow-sm ">
           <div className="flex flex-col space-y-1">
             <label htmlFor="email">Email</label>
             <input
-              className="p-2 border"
+              className="p-3 border"
               type="email"
               id="email"
               name="email"
@@ -58,7 +58,7 @@ export default function login() {
           <div className="flex flex-col space-y-1">
             <label htmlFor="password">Password </label>
             <input
-              className="p-2 border"
+              className="p-3 border"
               type="password"
               id="password"
               name="password"
@@ -71,10 +71,16 @@ export default function login() {
             <button
               type="Submit"
               onClick={handleSubmit}
-              className="bg-green-400 text-green-50 text-xl w-full p-3 rounded-md"
+              className="bg-green-800 text-green-50 text-xl w-full p-3 rounded-md"
             >
               Login
             </button>
+            <Link
+              to={"/signup"}
+              className="flex justify-center  bg-indigo-800 text-green-50 text-xl w-full p-3 rounded-md"
+            >
+              Create new Account
+            </Link>
             <Oauth />
           </div>
         </div>
