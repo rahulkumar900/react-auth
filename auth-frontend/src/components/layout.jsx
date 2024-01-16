@@ -9,7 +9,7 @@ export default function layout() {
     <div className="box-border flex flex-col">
       <Header />
 
-      <main className=" max-w-5xl w-full mx-auto">
+      <main className=" max-w-5xl w-full px-4 mx-auto">
         <div className="h-10"></div>
         {userInfo ? <Outlet /> : <Navigate to="/login" />}
       </main>

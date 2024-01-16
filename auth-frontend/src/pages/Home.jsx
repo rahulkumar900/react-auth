@@ -19,6 +19,7 @@ export default function Home() {
                   className="rounded-full w-10 h-10 object-cover"
                   avatar={u.avatar}
                   placeholder="R"
+                  profileName={u.name}
                 />
                 <div>
                   <div className="font-semibold text-lg">{u.name}</div>{" "}
