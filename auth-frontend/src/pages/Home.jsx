@@ -1,10 +1,11 @@
 import ProfilePic from "../components/atoms/profile-pic";
+import { useGetAllroomsQuery } from "../slices/roomQuery";
 import { useGetAllQuery } from "../slices/userQuery";
 
 export default function Home() {
   const { data, error, isLoading, isFetching } = useGetAllQuery();
-
-  console.log(data, error, isLoading, isFetching);
+  const { data1 } = useGetAllroomsQuery();
+  console.log(data1);
 
   return (
     <div className="w-full">

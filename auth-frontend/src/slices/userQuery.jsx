@@ -1,6 +1,6 @@
-import { authApi } from "./baseApiPath";
+import { baseApi } from "./baseApiPath";
 
-export const userSlice = authApi.injectEndpoints({
+export const userSlice = baseApi.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation({
       query: (data) => ({
