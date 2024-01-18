@@ -1,35 +1,23 @@
 import ProfilePic from "../components/atoms/profile-pic";
+import Grid from "../components/molecules/grid";
 import { useGetAllroomsQuery } from "../slices/roomQuery";
 import { useGetAllQuery } from "../slices/userQuery";
 
 export default function Home() {
-  const { data, error, isLoading, isFetching } = useGetAllQuery();
-  const { data1 } = useGetAllroomsQuery();
-  console.log(data1);
+  // const { data : allUsers, error : allUserError, isLoading : allUserLoading, isFetching: allUserFetching } = useGetAllQuery();
+  const {
+    data: allRooms,
+    error: allRoomError,
+    isLoading: allRoomLoading,
+  } = useGetAllroomsQuery();
+  console.log(allRooms);
 
   return (
     <div className="w-full">
       <h1 className="text-xl uppercase font-bold ">Home</h1>
-
-      <ul className="space-y-2 my-4">
-        {data &&
-          data.map((u, i) => {
-            return (
-              <li key={`${u.name}${i}`} className="flex gap-4 items-center">
-                <ProfilePic
-                  className="rounded-full w-10 h-10 object-cover"
-                  avatar={u.avatar}
-                  placeholder="R"
-                  profileName={u.name}
-                />
-                <div>
-                  <div className="font-semibold text-lg">{u.name}</div>{" "}
-                  <div className="text-gray-600">{u.email}</div>
-                </div>
-              </li>
-            );
-          })}
-      </ul>
+      {
+        // <Grid data={allRooms.data} />
+      }
     </div>
   );
 }
