@@ -14,10 +14,8 @@ export default function Home() {
 
   return (
     <div className="w-full">
-      <h1 className="text-xl uppercase font-bold ">Home</h1>
-      {
-        // <Grid data={allRooms.data} />
-      }
+      <h1 className="text-xl uppercase font-bold mb-4">Home</h1>
+      {allRooms && <Grid data={allRooms.data} />}
     </div>
   );
 }
