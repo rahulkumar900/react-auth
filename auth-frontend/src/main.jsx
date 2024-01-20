@@ -11,6 +11,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
 import SingnUp from "./pages/signup";
 import { ToastProvider } from "../toastContext";
+import CreateListing from "./pages/createListing";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/create",
+        element: <CreateListing />,
       },
     ],
   },

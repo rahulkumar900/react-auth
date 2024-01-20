@@ -7,11 +7,12 @@ export default function ProfilePic({
   placeholder = "R",
   handleClick = (f) => f,
   profileName = "",
+  onClick = (f) => f,
 }) {
   const firstName = (name) => name.charAt(0).toUpperCase();
-  console.log(firstName(name));
+
   return (
-    <>
+    <div onClick={onClick}>
       {!avatar ? (
         <div
           className={`${className}  bg-slate-500 inline-flex items-center justify-center`}
@@ -27,6 +28,6 @@ export default function ProfilePic({
           alt="avatar"
         />
       )}
-    </>
+    </div>
   );
 }
