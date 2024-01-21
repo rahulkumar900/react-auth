@@ -41,8 +41,11 @@ export default function Layout() {
     <div className="box-border flex flex-col ">
       <Header />
 
-      <main className="px-4 max-w-5xl w-full mx-auto my-10">
-        {userInfo ? <Outlet /> : <Navigate to="/login" />}
+      <main className="px-4  w-full  mx-auto">
+        <div className="max-w-5xl mx-auto ">
+          <div className="h-5"></div>
+          {userInfo ? <Outlet /> : <Navigate to="/login" />}
+        </div>
       </main>
     </div>
   );

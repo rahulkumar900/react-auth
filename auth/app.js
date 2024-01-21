@@ -4,7 +4,7 @@ var cookieParser = require("cookie-parser");
 const cors = require("cors");
 const app = express();
 const authRoutes = require("./routes/auth.routes");
-const taskRoutes = require("./routes/task.routes");
+const roomRoutes = require("./routes/room.routes");
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -15,7 +15,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.use("/api/", authRoutes);
-app.use("/api/", taskRoutes);
+app.use("/api/", roomRoutes);
 
 app.use((err, req, res, next) => {
   if (err.name === "UnauthorizedError") {
