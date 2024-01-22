@@ -1,7 +1,8 @@
 import ProfilePic from "../components/atoms/profile-pic";
 import { FaPlus, FaUpload } from "react-icons/fa6";
-import { useGetAllroomsQuery } from "../slices/roomQuery";
-import { useRef, useState } from "react";
+// import { useGetAllroomsQuery } from "../slices/roomQuery";
+import {  } from "../slices/userQuery";
+import { useId, useRef, useState } from "react";
 import {
   getDownloadURL,
   getStorage,
@@ -25,6 +26,8 @@ export default function CreateListing() {
   const [filePercentage, setFilePercentage] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(undefined);
   const [uploadStatus, setUploadStatus] = useState("");
+console.log(filePercentage)
+  const uniqueIdentifier = useId();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,6 +44,8 @@ export default function CreateListing() {
     if (newFiles.length > 0) {
       setFile((prevFiles) => [...prevFiles, ...newFiles]);
       const promises = newFiles.map((file) => {
+
+
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => {
@@ -63,17 +68,26 @@ export default function CreateListing() {
     }
   };
 
-  const uploadImages = async (files, e) => {
+  const uploadImages = async (e) => {
     e.preventDefault(); // Fix: Change preventDefaults to preventDefault
     const uploadedUrls = [];
 
     if (files && files.length > 0) {
       try {
-        await Promise.all(files.map((file) => handleFileUpload(file)));
+        await Promise.all(files.map((file) => handleFileUpload(file)))
+          .then((results) => setListing((prev) => ({ ...prev, imageUrl: results })))
+          .catch((error) => {
+            console.error("Error uploading files:", error);
+            setFileUploadError("Error uploading files. Please try again.");
+
+            // Handle error appropriately
+          });
       } catch (error) {
         console.error("Error uploading files:", error);
+        setFileUploadError("Error uploading files. Please try again.");  // Add this line
         // Handle error appropriately
       }
+
     }
   };
 
@@ -85,7 +99,7 @@ export default function CreateListing() {
       contentType: file.type,
     };
     const customeName = uniqueIdentifier + file.name;
-    console.log(customeName);
+   
     // Upload file and metadata to the object 'images/mountains.jpg'
     const storageRef = ref(storage, "images/" + customeName);
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
@@ -138,8 +152,8 @@ export default function CreateListing() {
         },
         () => {
           // Upload completed successfully, now we can get the download URL
-          getDownloadURLadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            setUser({ ...user, avatar: downloadURL });
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
             setUploadStatus("completed");
           });
         }
@@ -147,12 +161,18 @@ export default function CreateListing() {
     });
   };
 
+
+const handleSubmitForm = (){
+
+}
+
+
   const { title, description, price, discountedPrice, person, roomType } =
     listing;
   return (
     <div className="w-full">
       <h1 className="text-xl  font-semibold mb-4">Create New Listing</h1>
-      <form className=" flex gap-8 p-8 border rounded shadow-md">
+      <form onSubmit={handleSubmitForm} className="flex gap-8 p-8 border rounded shadow-md">
         <div className="flex-1 space-y-6">
           <div className="">
             <label htmlFor="title">Title</label>
@@ -242,15 +262,15 @@ export default function CreateListing() {
           <div className="image-section  min-h-max h-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 w-full border-2 border-slate-400 border-dashed">
             {previewUrls.length
               ? previewUrls.map((url, i) => {
-                  return (
-                    <img
-                      className="object-cover w-full h-48 rounded-lg ring-1 ring-gray-300"
-                      key={i}
-                      src={url}
-                      alt="img"
-                    />
-                  );
-                })
+                return (
+                  <img
+                    className="object-cover w-full h-48 rounded-lg ring-1 ring-gray-300"
+                    key={i}
+                    src={url}
+                    alt="img"
+                  />
+                );
+              })
               : null}
 
             <div
@@ -283,14 +303,19 @@ export default function CreateListing() {
                 title="Upload Images"
                 className="cursor-pointer h-48 group rounded-lg bg-green-200 grid place-items-center"
               >
-                <div>
-                  <div className="bg-green-400  group mx-auto   w-min p-4 rounded-full ">
-                    <FaUpload
-                      size={30}
-                      className="text-green-800  transform transition-transform group-hover:-translate-y-2  "
-                    />
-                  </div>
-                  <span className="leading-loose">Upload Image</span>
+                <div key={filePercentage}>
+                  {
+                    filePercentage && !fileUploadError && uploadStatus ? (<span>{uploadStatus}{filePercentage}</span>) :
+
+                      (<div>
+                        <div className="bg-green-400  group mx-auto   w-min p-4 rounded-full ">
+                          <FaUpload
+                            size={30}
+                            className="text-green-800  transform transition-transform group-hover:-translate-y-2  "
+                          />
+                        </div>
+                        <span className="leading-loose">Upload Image</span> </div>)
+                  }
                 </div>
               </div>
             )}

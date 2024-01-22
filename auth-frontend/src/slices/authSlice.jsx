@@ -76,4 +76,5 @@ export const {
   signOutUserStart,
   signOutUserSuccess,
   signOutUserFailure,
+  deleteUserSuccess,
 } = authSlice.actions;

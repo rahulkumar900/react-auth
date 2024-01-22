@@ -52,7 +52,7 @@ export default function Header() {
                 <HeaderProfile
                   avatar={userInfo.avatar}
                   onClick={() => setIsoff(!isOff)}
-                  className="w-10 h-10 cursor-pointer object-cover rounded-full text-lg font-bold"
+                  className="w-10 h-10 bg-gray-300 cursor-pointer object-cover rounded-full text-lg font-bold"
                 />
               )}
               {userInfo && <DropProfile isOff={isOff} userInfo={userInfo} />}

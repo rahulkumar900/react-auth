@@ -13,10 +13,10 @@ export default function ProfilePic({
   const firstName = (name) => name.charAt(0).toUpperCase();
 
   return (
-    <div onClick={onClick}>
+    <div className= {`${className} overflow-hidden   `} onClick={onClick}>
       {!avatar ? (
         <div
-          className={`${className}  bg-slate-500 inline-flex items-center justify-center`}
+          className={` w-full h-full  inline-flex items-center justify-center`}
         >
           {firstName(profileName) || placeholder}
         </div>
