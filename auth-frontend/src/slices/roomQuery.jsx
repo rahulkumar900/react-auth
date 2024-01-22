@@ -8,7 +8,14 @@ export const roomSlice = baseApi.injectEndpoints({
         method: "GET",
       }),
     }),
+    createNewRoom : build.mutation({
+      query: (data) => ({
+        url : "/rooms",
+        method: "POST",
+        body: data,
+      })
+    })
   }),
 });
 
-export const { useGetAllroomsQuery } = roomSlice;
+export const { useGetAllroomsQuery,useCreateNewRoomMutation } = roomSlice;

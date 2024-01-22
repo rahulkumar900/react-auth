@@ -1,7 +1,7 @@
 import ProfilePic from "../components/atoms/profile-pic";
 import { FaPlus, FaUpload } from "react-icons/fa6";
-// import { useGetAllroomsQuery } from "../slices/roomQuery";
-import {  } from "../slices/userQuery";
+import { useCreateNewRoomMutation } from "../slices/roomQuery";
+
 import { useId, useRef, useState } from "react";
 import {
   getDownloadURL,
@@ -9,8 +9,12 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
+import { useSelector } from "react-redux";
 
 export default function CreateListing() {
+
+  const { userInfo } = useSelector((state) => state.auth);
+
   const initalListing = {
     title: "",
     description: "",
@@ -18,16 +22,17 @@ export default function CreateListing() {
     discountedPrice: 0,
     person: 1,
     imageUrl: [],
-    owner: "",
-    roomType: "",
+    owner: userInfo._id,
+    roomType: null,
   };
 
   const [listing, setListing] = useState(initalListing);
   const [filePercentage, setFilePercentage] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(undefined);
   const [uploadStatus, setUploadStatus] = useState("");
-console.log(filePercentage)
+  console.log(filePercentage)
   const uniqueIdentifier = useId();
+  const [createNewRoom] = useCreateNewRoomMutation();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -99,7 +104,7 @@ console.log(filePercentage)
       contentType: file.type,
     };
     const customeName = uniqueIdentifier + file.name;
-   
+
     // Upload file and metadata to the object 'images/mountains.jpg'
     const storageRef = ref(storage, "images/" + customeName);
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
@@ -162,9 +167,15 @@ console.log(filePercentage)
   };
 
 
-const handleSubmitForm = (){
-
-}
+  const handleSubmitForm = async (e)=>{
+    e.preventDefault();
+    try {
+      const res = await createNewRoom(listing);
+      console.log(res);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   const { title, description, price, discountedPrice, person, roomType } =
@@ -249,8 +260,8 @@ const handleSubmitForm = (){
                 <select
                   onChange={handleInputChange}
                   className=" "
-                  name="roomtype"
-                  defaultValue={roomType}
+                  name="roomType"
+                  
                 >
                   <option>----Select----</option>
                   <option value="Ac">Ac</option>
