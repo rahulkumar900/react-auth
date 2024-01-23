@@ -11,7 +11,7 @@ export default function card({
 }) {
   return (
     <div className="rounded-md border flex flex-col md:flex-row  overflow-hidden">
-      <div className="w-full md:w-0   bg-gray-500 h-0  md:pr-[30%] md:h-auto md:min-h-[60px] relative pt-[60%] md:pt-0 block ">
+      <div className="w-full bg-gray-500 h-0  md:w-64 md:h-56 relative pt-[60%] md:pt-0 block ">
         <img
           src={imageUrl}
           width="100%"
