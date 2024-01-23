@@ -1,7 +1,6 @@
 import React from "react";
 import { FaStar, FaStarHalf } from "react-icons/fa";
 export default function Rating({ rating = 0 }) {
-  console.log(rating);
   return (
     <div className="inline-flex items-center gap-2 ">
       <span>{rating} of 5</span>

@@ -10,10 +10,11 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { useSelector } from "react-redux";
+import { useToast } from "../../toastContext";
 
 export default function CreateListing() {
-
   const { userInfo } = useSelector((state) => state.auth);
+  const { showToast } = useToast();
 
   const initalListing = {
     title: "",
@@ -30,7 +31,7 @@ export default function CreateListing() {
   const [filePercentage, setFilePercentage] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(undefined);
   const [uploadStatus, setUploadStatus] = useState("");
-  console.log(filePercentage)
+  console.log(filePercentage);
   const uniqueIdentifier = useId();
   const [createNewRoom] = useCreateNewRoomMutation();
 
@@ -44,13 +45,12 @@ export default function CreateListing() {
   const fileRef = useRef();
   const [files, setFile] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [emptyKeys, setEmptykeys] = useState([]);
   const handleImageChange = (e) => {
     const newFiles = Array.from(e.target.files);
     if (newFiles.length > 0) {
       setFile((prevFiles) => [...prevFiles, ...newFiles]);
       const promises = newFiles.map((file) => {
-
-
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => {
@@ -80,7 +80,9 @@ export default function CreateListing() {
     if (files && files.length > 0) {
       try {
         await Promise.all(files.map((file) => handleFileUpload(file)))
-          .then((results) => setListing((prev) => ({ ...prev, imageUrl: results })))
+          .then((results) =>
+            setListing((prev) => ({ ...prev, imageUrl: results }))
+          )
           .catch((error) => {
             console.error("Error uploading files:", error);
             setFileUploadError("Error uploading files. Please try again.");
@@ -89,10 +91,9 @@ export default function CreateListing() {
           });
       } catch (error) {
         console.error("Error uploading files:", error);
-        setFileUploadError("Error uploading files. Please try again.");  // Add this line
+        setFileUploadError("Error uploading files. Please try again."); // Add this line
         // Handle error appropriately
       }
-
     }
   };
 
@@ -166,30 +167,76 @@ export default function CreateListing() {
     });
   };
 
+  function getEmptyKeys(obj) {
+    const emptyKeys = [];
 
-  const handleSubmitForm = async (e)=>{
-    e.preventDefault();
-    try {
-      const res = await createNewRoom(listing);
-      console.log(res);
-    } catch (error) {
-      console.log(error)
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && !obj[key]) {
+        emptyKeys.push(key);
+      }
     }
+
+    return emptyKeys;
   }
 
+  const {
+    title,
+    description,
+    price,
+    discountedPrice,
+    person,
+    roomType,
+    imageUrl,
+    owner,
+  } = listing;
 
-  const { title, description, price, discountedPrice, person, roomType } =
-    listing;
+  const handleSubmitForm = async (e) => {
+    e.preventDefault();
+    try {
+      if (
+        title &&
+        description &&
+        price &&
+        discountedPrice &&
+        person &&
+        imageUrl &&
+        owner &&
+        roomType
+      ) {
+        const { data } = await createNewRoom(listing);
+        if (data.success) {
+          setListing(initalListing);
+          showToast(data.message, { type: "success" });
+        } else {
+          console.log(data.message);
+          showToast(data.message, { type: "error" });
+        }
+      } else {
+        const keys = getEmptyKeys(listing);
+        setEmptykeys(keys);
+        showToast(`${keys} is empty `, { type: "warning" });
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  console.log(emptyKeys);
   return (
     <div className="w-full">
       <h1 className="text-xl  font-semibold mb-4">Create New Listing</h1>
-      <form onSubmit={handleSubmitForm} className="flex gap-8 p-8 border rounded shadow-md">
+      <form
+        onSubmit={handleSubmitForm}
+        className="flex gap-8 p-8 border rounded shadow-md"
+      >
         <div className="flex-1 space-y-6">
           <div className="">
             <label htmlFor="title">Title</label>
             <div className="flex">
               <input
-                className="w-full border p-2 rounded-md"
+                className={`${
+                  emptyKeys.includes("title") && "border-red-500"
+                } w-full border p-2 rounded-md`}
                 type="text"
                 name="title"
                 id="title"
@@ -202,7 +249,9 @@ export default function CreateListing() {
             <label htmlFor="description">Description</label>
             <div>
               <textarea
-                className="w-full h-32 border p-2 rounded-md"
+                className={`${
+                  emptyKeys.includes("title") && "border-red-500"
+                } w-full h-32 border p-2 rounded-md`}
                 type="text"
                 name="description"
                 id="description"
@@ -261,7 +310,6 @@ export default function CreateListing() {
                   onChange={handleInputChange}
                   className=" "
                   name="roomType"
-                  
                 >
                   <option>----Select----</option>
                   <option value="Ac">Ac</option>
@@ -273,15 +321,15 @@ export default function CreateListing() {
           <div className="image-section  min-h-max h-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 w-full border-2 border-slate-400 border-dashed">
             {previewUrls.length
               ? previewUrls.map((url, i) => {
-                return (
-                  <img
-                    className="object-cover w-full h-48 rounded-lg ring-1 ring-gray-300"
-                    key={i}
-                    src={url}
-                    alt="img"
-                  />
-                );
-              })
+                  return (
+                    <img
+                      className="object-cover w-full h-48 rounded-lg ring-1 ring-gray-300"
+                      key={i}
+                      src={url}
+                      alt="img"
+                    />
+                  );
+                })
               : null}
 
             <div
@@ -315,18 +363,22 @@ export default function CreateListing() {
                 className="cursor-pointer h-48 group rounded-lg bg-green-200 grid place-items-center"
               >
                 <div key={filePercentage}>
-                  {
-                    filePercentage && !fileUploadError && uploadStatus ? (<span>{uploadStatus}{filePercentage}</span>) :
-
-                      (<div>
-                        <div className="bg-green-400  group mx-auto   w-min p-4 rounded-full ">
-                          <FaUpload
-                            size={30}
-                            className="text-green-800  transform transition-transform group-hover:-translate-y-2  "
-                          />
-                        </div>
-                        <span className="leading-loose">Upload Image</span> </div>)
-                  }
+                  {filePercentage && !fileUploadError && uploadStatus ? (
+                    <span>
+                      {uploadStatus}
+                      {filePercentage}
+                    </span>
+                  ) : (
+                    <div>
+                      <div className="bg-green-400  group mx-auto   w-min p-4 rounded-full ">
+                        <FaUpload
+                          size={30}
+                          className="text-green-800  transform transition-transform group-hover:-translate-y-2  "
+                        />
+                      </div>
+                      <span className="leading-loose">Upload Image</span>{" "}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

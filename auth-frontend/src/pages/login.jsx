@@ -39,7 +39,7 @@ export default function login() {
   };
 
   return (
-    <div className="flex mt-48 justify-center items-center ">
+    <div className="flex h-screen w-full p-4 justify-center items-center ">
       <div className="  w-full  max-w-xl space-y-8  ">
         <h2 className="text-4xl font-bold text-center ">Login</h2>
         <div className="space-y-8 px-8 py-14 border bg-zinc-100  rounded-md ring-1 ring-zinc-300  drop-shadow-sm ">

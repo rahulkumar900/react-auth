@@ -10,7 +10,6 @@ export default function Home() {
     error: allRoomError,
     isLoading: allRoomLoading,
   } = useGetAllroomsQuery();
-  console.log(allRooms);
 
   return (
     <div className="w-full">

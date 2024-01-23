@@ -1,9 +1,8 @@
 import React from "react";
 import Card from "../atoms/card";
 export default function Grid({ data = [] }) {
-  console.log(data.length);
   return (
-    <div>
+    <div className="grid  gap-4">
       {data.length ? (
         data.map((r, i) => <Card key={i} {...r} />)
       ) : (
